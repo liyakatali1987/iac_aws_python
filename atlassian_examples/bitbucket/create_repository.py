@@ -101,7 +101,8 @@ class BitbucketApi:
             return e
 
 
-host = input('Enter host address : [e.g. http://localhost:7990] ')
+host = input(
+    'Enter host address : [e.g. http://localhost:7990] ') or 'http://localhost:7990'
 user = input('Enter userid : ')
 password = getpass(prompt='Enter password : ')
 

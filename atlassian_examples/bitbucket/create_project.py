@@ -1,12 +1,9 @@
-import os
-from pathlib import Path
-import subprocess
 import json
 from http_req import HttpRequests
 from getpass import getpass
 
 """
-    This script will help user to create a bitbucket repo with a readme file.
+    This script will help user to create a bitbucket project.
 
 """
 
@@ -44,7 +41,8 @@ class BitbucketApi:
         return self.__bitbucket_requests('post', url, data)
 
 
-host = input('Enter host address : [e.g. http://localhost:7990] ')
+host = input(
+    'Enter host address : [e.g. http://localhost:7990] ') or 'http://localhost:7990'
 user = input('Enter userid : ')
 password = getpass(prompt='Enter password : ')
 
