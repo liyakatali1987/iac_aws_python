@@ -4,7 +4,7 @@ from botocore.config import Config
 
 class AWS:
     def __init__(self, region_name, aws_profile):
-
+        """Required parameters for AWS connection."""
         self.config = Config(
             region_name=region_name,
             retries={

@@ -17,9 +17,9 @@ class BitbucketApi:
         self.user = user
         self.password = password
 
-    def __bitbucket_requests(self, type, url, data=None):
+    def __bitbucket_requests(self, req_type, url, data=None):
         try:
-            response = HttpRequests(type, url, self.user,
+            response = HttpRequests(req_type, url, self.user,
                                     self.password, data=json.dumps(data)).http_requests()
             if response.text:
                 return response.status_code, response.json()

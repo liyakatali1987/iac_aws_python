@@ -1,7 +1,10 @@
 from aws_conn import AWS
 
 
-def get_all_items(table_name, attributes_to_get=[], region_name=None, aws_profile='default'):
+def get_all_items(table_name,
+                  attributes_to_get=None,
+                  region_name=None,
+                  aws_profile='default'):
 
     aws_obj = AWS(region_name=region_name, aws_profile=aws_profile)
     client = aws_obj.get_client('dynamodb')

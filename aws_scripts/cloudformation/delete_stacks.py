@@ -27,11 +27,11 @@ def get_aws_profile():
     try:
         return ams_profiles[int(profile)-1]
     except Exception:
-        print('Invalid Profile Selected, Setting ams01-nonprod as default value')
+        print('Invalid Profile, Setting ams01-nonprod as default value')
         return 'ams01-nonprod'
 
 
-def delete_stacks(filter, profile_name='default'):
+def delete_stacks(stacks_filter, profile_name='default'):
 
     session = Session(profile_name=profile_name)
 
@@ -41,14 +41,14 @@ def delete_stacks(filter, profile_name='default'):
     stack_list = []
 
     print("Listing stacks:")
-    if not filter:
-        print('Filter values is required')
+    if not stacks_filter:
+        print('stacks_filter values is required')
         exit(1)
 
     for stacks in response_iterator:
         stacks = stacks['Stacks']
         for stack in stacks:
-            if filter in stack['StackName']:
+            if stacks_filter in stack['StackName']:
                 stack_list.append(stack['StackName'])
 
     print("Stacks to be deleted")
@@ -77,7 +77,7 @@ def delete_stacks(filter, profile_name='default'):
 
 aws_profile = get_aws_profile()
 print(f'Selected AWS Profile: {aws_profile}')
-filter = input('Enter Stack Filter: ').strip()
+stacks_filter = input('Enter Stack stacks_filter: ').strip()
 
 
-delete_stacks(filter, aws_profile)
+delete_stacks(stacks_filter, aws_profile)

@@ -1,7 +1,9 @@
 from aws_conn import AWS
 
 
-def list_sqs_messages(queue_url, region_name='ap-southeast-2', aws_profile='default'):
+def list_sqs_messages(queue_url,
+                      region_name='ap-southeast-2',
+                      aws_profile='default'):
 
     aws_obj = AWS(region_name=region_name, aws_profile=aws_profile)
     sqs = aws_obj.get_resource('sqs')
