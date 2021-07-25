@@ -2,14 +2,14 @@ from bitbucket_client import BitbucketApi
 from getpass import getpass
 
 
-""" The demostration shows how to list all the users in bitbucket server
-"""
+# The demostration shows how to list all the users in bitbucket server
 
 
 def list__bitbucket_users(bb_client):
     url = f'{bb_client.host}/admin/users'
     user_data = []
     status, response = bb_client.bitbucket_requests('get', url)
+    print(status)
     user_data.extend(response['values'])
 
     while not response['isLastPage']:

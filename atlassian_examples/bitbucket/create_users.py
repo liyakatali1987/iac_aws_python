@@ -2,11 +2,10 @@ from bitbucket_client import BitbucketApi
 from getpass import getpass
 
 
-""" The demostration shows how to add users in bitbucket.
-    Set notify to true the create user will be notified via email their account has been created
-    and requires a password to be reset. 
-    This option can only be used if a mail server has been configured
-"""
+# The demostration shows how to add users in bitbucket.
+# Set notify to true the create user will be notified via email their account has been created
+# and requires a password to be reset.
+# This option can only be used if a mail server has been configured
 
 
 def create_bitbuck_user(bb_client, user_name, password, display_name, email, add_to_default_group=False, notify=False):

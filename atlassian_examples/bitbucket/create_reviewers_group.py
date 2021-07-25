@@ -1,16 +1,13 @@
 from bitbucket_client import BitbucketApi
 from getpass import getpass
 
-
-"""
-    The demostration shows how to add multiple users to a bitbucker group
-
-"""
+# The demostration shows how to add multiple users to a bitbucker group
 
 
 def get_user_details(bb_client, user_id):
     url = f"{bb_client.host}/admin/users?filter={user_id}"
     status, response = bb_client.bitbucket_requests('get', url)
+    print(status)
     for user in response['values']:
         if user['name'] == user_id:
             return user

@@ -1,8 +1,7 @@
 from bitbucket_client import BitbucketApi
 from getpass import getpass
 
-
-""" The demostration shows how to add users to a group"""
+# The demostration shows how to add users to a group
 
 
 def add_users_to_group(bb_client, group_name, user_list):
@@ -20,7 +19,6 @@ password = getpass(prompt='Enter password (*required): ')
 group_name = input('Enter group name (*required): ')
 # user list input should be in format user1 user2 user3
 user_list = input('Enter users list (*required): ').split()
-
 
 bb_clinet = BitbucketApi(host, user, password)
 status, user_details = add_users_to_group(bb_clinet, group_name, user_list)

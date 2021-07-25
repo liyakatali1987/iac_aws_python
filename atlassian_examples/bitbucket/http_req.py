@@ -3,6 +3,7 @@ import requests
 
 class HttpRequests:
     def __init__(self, type, uri, user, pwrd, data={}, headers={}, params={}):
+        """Initializing class variables."""
         self.type = type
         self.uri = uri
         self.user = user

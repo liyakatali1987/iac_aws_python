@@ -5,10 +5,7 @@ import json
 from http_req import HttpRequests
 from getpass import getpass
 
-"""
-    This script will help user to create a bitbucket repo with a readme file.
-
-"""
+# This script will help user to create a bitbucket repo with a readme file.
 
 
 def validate_inputs(values):
@@ -18,6 +15,7 @@ def validate_inputs(values):
 
 class BitbucketApi:
     def __init__(self, host, user, password):
+        """Initializing Class Variables."""
         self.host = f'{host}/rest/api/latest'
         self.user = user
         self.password = password
