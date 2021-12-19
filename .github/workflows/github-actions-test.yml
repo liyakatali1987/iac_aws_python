@@ -1,5 +1,10 @@
 name: GitHub Actions Demo for python development
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '*/5 * * * *'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +28,8 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name:
+        run: echo "Hello scheduled job"
       # - name: Test with pytest
       #   run: |
       #     pytest
