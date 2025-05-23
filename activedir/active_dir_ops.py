@@ -25,8 +25,7 @@ class ActiveDirectoryOps:
         corp_c = self.get_connection()
         if not corp_c.bind(): # Check if bind was successful
             print(f"Failed to bind to AD server: {corp_c.result}")
-            return None 
-        
+            return None
         # Ensure attributes_to_get is a list if it's coming from input/env var
         if isinstance(attributes_to_get, str):
             attributes_to_get = [attr.strip() for attr in attributes_to_get.split(',')]
@@ -37,11 +36,9 @@ class ActiveDirectoryOps:
             attributes=attributes_to_get,
             paged_size=100 # Example page size
         )
-        
         results = []
         for entry in ldap_data_generator:
             results.append(entry)
-        
         corp_c.unbind() # Good practice to unbind
         return results
 
@@ -83,7 +80,6 @@ if __name__ == '__main__':
 
             # Example search parameters (consider getting these from input/env vars as well for flexibility)
             search_base_input = input("Enter Search Base (e.g., 'DC=example,DC=com'): ")
-            
             attributes_input = input("Enter attributes to retrieve (comma-separated, e.g., 'sAMAccountName,displayName,mail'): ")
             if not attributes_input:
                 attributes_to_get_list = ['sAMAccountName', 'displayName', 'mail', 'objectSid', 'lastLogonTimestamp'] # Default
@@ -92,7 +88,6 @@ if __name__ == '__main__':
                 attributes_to_get_list = [attr.strip() for attr in attributes_input.split(',')]
 
             search_filter_input = input("Enter LDAP search filter (e.g., '(&(objectClass=user)(sAMAccountName=your_user))'): ")
-            
             if not all([search_base_input, attributes_to_get_list, search_filter_input]):
                 print("Missing one or more search parameters. Aborting search example.")
             else:

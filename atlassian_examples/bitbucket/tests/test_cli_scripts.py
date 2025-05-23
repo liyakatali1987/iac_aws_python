@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, call # Removed MagicMock
 import sys
 import os
 import getpass # Import getpass for direct reference in patching
@@ -23,7 +23,6 @@ class TestCliScripts(unittest.TestCase):
     def test_add_default_reviewers_project_basic_input(
             self, mock_input, mock_getpass, mock_os_environ_get, MockBitbucketApi):
         """Test add_default_reviewers_project.py with basic user inputs."""
-        
         # Setup mock return values for inputs
         mock_input.side_effect = [
             'http://localhost:7990', # host
@@ -37,7 +36,7 @@ class TestCliScripts(unittest.TestCase):
         # Mock BitbucketApi instance and its methods
         mock_api_instance = MockBitbucketApi.return_value
         mock_api_instance.get_user_details.side_effect = [
-            {'name': 'user1', 'id': 1}, 
+            {'name': 'user1', 'id': 1},
             {'name': 'user2', 'id': 2}
         ]
         mock_api_instance.generic_add_default_reviewers_condition.return_value = (200, "Success", None)
@@ -49,7 +48,6 @@ class TestCliScripts(unittest.TestCase):
         mock_os_environ_get.assert_any_call('BITBUCKET_HOST')
         mock_os_environ_get.assert_any_call('BITBUCKET_USER')
         mock_os_environ_get.assert_any_call('BITBUCKET_PASSWORD')
-        
         mock_input.assert_any_call('Enter host address : [e.g. http://localhost:7990] ')
         mock_input.assert_any_call('Enter userid (*required):')
         mock_getpass.assert_called_once_with(prompt='Enter password (*required): ')
@@ -57,10 +55,8 @@ class TestCliScripts(unittest.TestCase):
         mock_input.assert_any_call('Enter space-separated user list (e.g., userA userB userC) (*required): ')
 
         MockBitbucketApi.assert_called_once_with('http://localhost:7990', 'testuser', 'testpassword')
-        
         expected_user_calls = [call('user1'), call('user2')]
         mock_api_instance.get_user_details.assert_has_calls(expected_user_calls)
-        
         expected_user_data = [{'name': 'user1', 'id': 1}, {'name': 'user2', 'id': 2}]
         expected_payload_config = {
             "sourceMatcher": {"active": True, "id": "refs/heads/**", "displayId": "refs/heads/**", "type": {"id": "PATTERN", "name": "Pattern"}},
@@ -86,7 +82,6 @@ class TestCliScripts(unittest.TestCase):
             if key == 'BITBUCKET_PASSWORD': return 'envpass'
             return None
         mock_os_environ_get.side_effect = environ_get_side_effect
-        
         # Setup mock for remaining inputs
         mock_input.side_effect = [
             'TESTPROJ_ENV', # project_key
@@ -95,7 +90,7 @@ class TestCliScripts(unittest.TestCase):
 
         mock_api_instance = MockBitbucketApi.return_value
         mock_api_instance.get_user_details.side_effect = [
-            {'name': 'env_userA', 'id': 10}, 
+            {'name': 'env_userA', 'id': 10},
             {'name': 'env_userB', 'id': 20}
         ]
         mock_api_instance.generic_add_default_reviewers_condition.return_value = (201, "Created via Env", None)
@@ -118,7 +113,6 @@ class TestCliScripts(unittest.TestCase):
         mock_input.assert_any_call('Enter space-separated user list (e.g., userA userB userC) (*required): ')
 
         MockBitbucketApi.assert_called_once_with('http://envhost:7990', 'envuser', 'envpass')
-        
         expected_user_data = [{'name': 'env_userA', 'id': 10}, {'name': 'env_userB', 'id': 20}]
         mock_api_instance.generic_add_default_reviewers_condition.assert_called_once_with(
             'TESTPROJ_ENV', expected_user_data, unittest.mock.ANY # payload_config is standard
@@ -131,7 +125,6 @@ class TestCliScripts(unittest.TestCase):
     def test_add_default_reviewers_repo_basic_input(
             self, mock_input, mock_getpass, mock_os_environ_get, MockBitbucketApi):
         """Test add_default_reviewers_repo.py with basic user inputs."""
-        
         # Setup mock return values for inputs
         mock_input.side_effect = [
             'http://localhost:7990', # host
@@ -145,7 +138,7 @@ class TestCliScripts(unittest.TestCase):
 
         mock_api_instance = MockBitbucketApi.return_value
         mock_api_instance.get_user_details.side_effect = [
-            {'name': 'userA_repo', 'id': 101}, 
+            {'name': 'userA_repo', 'id': 101},
             {'name': 'userB_repo', 'id': 102}
         ]
         mock_api_instance.generic_add_default_reviewers_condition.return_value = (200, "Repo Success", None)
@@ -155,7 +148,6 @@ class TestCliScripts(unittest.TestCase):
         mock_os_environ_get.assert_any_call('BITBUCKET_HOST')
         mock_os_environ_get.assert_any_call('BITBUCKET_USER')
         mock_os_environ_get.assert_any_call('BITBUCKET_PASSWORD')
-        
         mock_input.assert_any_call('Enter host address : [e.g. http://localhost:7990] ')
         mock_input.assert_any_call('Enter userid (*required):')
         mock_getpass.assert_called_once_with(prompt='Enter password (*required): ')
@@ -164,10 +156,8 @@ class TestCliScripts(unittest.TestCase):
         mock_input.assert_any_call('Enter space-separated user list (e.g., userA userB userC) (*required): ')
 
         MockBitbucketApi.assert_called_once_with('http://localhost:7990', 'testuser_repo', 'testpassword_repo')
-        
         expected_user_calls = [call('userA_repo'), call('userB_repo')]
         mock_api_instance.get_user_details.assert_has_calls(expected_user_calls)
-        
         expected_user_data = [{'name': 'userA_repo', 'id': 101}, {'name': 'userB_repo', 'id': 102}]
         expected_payload_config = { # This is the standard payload config
             "sourceMatcher": {"active": True, "id": "refs/heads/**", "displayId": "refs/heads/**", "type": {"id": "PATTERN", "name": "Pattern"}},
@@ -180,7 +170,7 @@ class TestCliScripts(unittest.TestCase):
 
     @patch('atlassian_examples.bitbucket.add_default_reviewers_repo.BitbucketApi')
     @patch('os.environ.get')
-    @patch('getpass.getpass') 
+    @patch('getpass.getpass')
     @patch('builtins.input')
     def test_add_default_reviewers_repo_env_vars(
             self, mock_input, mock_getpass, mock_os_environ_get, MockBitbucketApi):
@@ -192,7 +182,6 @@ class TestCliScripts(unittest.TestCase):
             if key == 'BITBUCKET_PASSWORD': return 'envpass_repo'
             return None
         mock_os_environ_get.side_effect = environ_get_side_effect
-        
         mock_input.side_effect = [
             'TESTPROJ_R_ENV',         # project_key
             'test-repo-name-env',     # repo_name
@@ -201,7 +190,7 @@ class TestCliScripts(unittest.TestCase):
 
         mock_api_instance = MockBitbucketApi.return_value
         mock_api_instance.get_user_details.side_effect = [
-            {'name': 'env_userA_r', 'id': 110}, 
+            {'name': 'env_userA_r', 'id': 110},
             {'name': 'env_userB_r', 'id': 120}
         ]
         mock_api_instance.generic_add_default_reviewers_condition.return_value = (201, "Created Repo via Env", None)
@@ -223,7 +212,6 @@ class TestCliScripts(unittest.TestCase):
         mock_input.assert_any_call('Enter space-separated user list (e.g., userA userB userC) (*required): ')
 
         MockBitbucketApi.assert_called_once_with('http://envhost_repo:7990', 'envuser_repo', 'envpass_repo')
-        
         expected_user_data = [{'name': 'env_userA_r', 'id': 110}, {'name': 'env_userB_r', 'id': 120}]
         mock_api_instance.generic_add_default_reviewers_condition.assert_called_once_with(
             'TESTPROJ_R_ENV', expected_user_data, unittest.mock.ANY, repo_name='test-repo-name-env'

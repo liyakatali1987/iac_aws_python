@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch # Removed MagicMock
 import sys
 import os
 
@@ -10,7 +10,7 @@ project_root = os.path.dirname(os.path.dirname(parent_dir)) # This is /
 sys.path.insert(0, project_root)
 
 from atlassian_examples.bitbucket.http_req import HttpRequests
-import requests # To help with mocking its methods
+# Removed: import requests 
 
 class TestHttpRequests(unittest.TestCase):
 
@@ -29,10 +29,9 @@ class TestHttpRequests(unittest.TestCase):
     def test_init_custom_headers_and_timeout(self):
         """Test HttpRequests.__init__ with custom headers and timeout."""
         custom_headers = {'X-Custom-Header': 'Value', 'Accept': 'application/xml'}
-        req = HttpRequests('post', 'http://test.com/api', 'admin', 'secret', 
-                           data='{"key":"val"}', headers=custom_headers, 
+        req = HttpRequests('post', 'http://test.com/api', 'admin', 'secret',
+                           data='{"key":"val"}', headers=custom_headers,
                            params={'page': 1}, timeout=60)
-        
         self.assertEqual(req.data, '{"key":"val"}')
         expected_headers = {'Accept': 'application/xml', # Overridden
                             'Content-Type': 'application/json', # Default
@@ -75,7 +74,6 @@ class TestHttpRequests(unittest.TestCase):
         uri = 'http://test.com/update_resource/1'
         data = '{"name": "updated_item"}'
         auth = ('test_user', 'test_pass')
-        
         req = HttpRequests('put', uri, auth[0], auth[1], data=data)
         req.http_requests()
 
@@ -88,7 +86,7 @@ class TestHttpRequests(unittest.TestCase):
         auth = ('test_user', 'test_pass')
 
         # Note: data is intentionally not passed for DELETE as per previous subtask modifications
-        req = HttpRequests('delete', uri, auth[0], auth[1]) 
+        req = HttpRequests('delete', uri, auth[0], auth[1])
         req.http_requests()
 
         mock_requests_delete.assert_called_once_with(uri, headers=req.headers, params=None, auth=auth, timeout=req.timeout)

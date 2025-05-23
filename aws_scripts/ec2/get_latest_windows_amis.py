@@ -11,16 +11,13 @@ def get_latest_amis():
 
     # Instantiate the AWS client
     aws_connection = AWS(region_name=region_name, aws_profile=aws_profile)
-    
     # Get the EC2 client
     client = aws_connection.get_client('ec2')
-    
     if not client:
         print("Failed to get EC2 client. Exiting.") # Or handle error more robustly
         return
 
     current_month = datetime.now().month
-    
     try:
         response = client.describe_images(Owners=['amazon'],
                                       Filters=[

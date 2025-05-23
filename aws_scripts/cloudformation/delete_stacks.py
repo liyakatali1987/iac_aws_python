@@ -15,7 +15,6 @@ def get_aws_profile_interactive():
     if not ams_profiles:
         print("No 'ams' profiles found. Using 'default'.")
         return 'default'
-        
     ams_profiles.sort()
     print("Available 'ams' profiles:")
     for i, profile_name in enumerate(ams_profiles):
@@ -54,10 +53,8 @@ def delete_stacks_logic(aws_client, stacks_filter):
     if not stack_list:
         print("No stacks found matching the filter.")
         return
-        
     for s_name in stack_list:
         print(s_name)
-    
     user_input = input('Press y to continue with deletion of the above stacks: ')
 
     if user_input.lower() == 'y':
@@ -86,7 +83,6 @@ def delete_stacks_logic(aws_client, stacks_filter):
 
 def main():
     region_name = os.environ.get('AWS_REGION') or 'ap-southeast-2'
-    
     # Get AWS profile: from env var first, then interactive, then default
     aws_profile_env = os.environ.get('AWS_PROFILE')
     if aws_profile_env:

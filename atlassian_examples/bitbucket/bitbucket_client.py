@@ -15,7 +15,7 @@ class BitbucketApi:
 
     def get_user_details(self, user_id):
         url = f"{self.base_api_url}/admin/users?filter={user_id}"
-        status, response, error = self.bitbucket_requests('get', url)
+        _, response, error = self.bitbucket_requests('get', url) # status is unused
         if error:
             # Handle error appropriately, perhaps log it or raise an exception
             print(f"Error fetching user details: {error}")

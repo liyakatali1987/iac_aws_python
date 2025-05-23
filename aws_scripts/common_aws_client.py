@@ -27,7 +27,7 @@ class AWS:
             return self.session.client(service, config=self.config)
         except Exception as e:
             logging.error(f"Error getting AWS client for service '{service}' (profile: {self.aws_profile}, region: {self.config.region_name}): {e}")
-            raise 
+            raise
 
     def get_resource(self, service):
         try:

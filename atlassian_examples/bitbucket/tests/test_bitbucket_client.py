@@ -11,34 +11,32 @@ project_root = os.path.dirname(os.path.dirname(parent_dir)) # This is /
 sys.path.insert(0, project_root)
 
 from atlassian_examples.bitbucket.bitbucket_client import BitbucketApi
-from atlassian_examples.bitbucket.http_req import HttpRequests # Needed for mocking HttpRequests
+# Removed: from atlassian_examples.bitbucket.http_req import HttpRequests 
 
 class TestBitbucketApi(unittest.TestCase):
+
+    TEST_USER_PASSWORD = "dummy_test_password" # Define as a class constant
 
     def test_init(self):
         """Test BitbucketApi.__init__"""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         expected_base_api_url = f"{host}/rest/api/latest"
         expected_base_default_reviewers_url = f"{host}/rest/default-reviewers/latest"
-        
         self.assertEqual(client.base_api_url, expected_base_api_url)
         self.assertEqual(client.base_default_reviewers_url, expected_base_default_reviewers_url)
         self.assertEqual(client.user, user)
-        self.assertEqual(client.password, password)
+        self.assertEqual(client.password, self.TEST_USER_PASSWORD)
 
     @patch.object(BitbucketApi, 'bitbucket_requests')
     def test_get_user_details_found(self, mock_bitbucket_requests):
         """Test get_user_details when user is found."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         user_id_to_find = "jdoe"
         mock_response_data = {
             "values": [
@@ -47,11 +45,8 @@ class TestBitbucketApi(unittest.TestCase):
             ]
         }
         mock_bitbucket_requests.return_value = (200, mock_response_data, None)
-        
         expected_user_details = {"name": "jdoe", "emailAddress": "jdoe@example.com", "id": 101}
-        
         actual_user_details = client.get_user_details(user_id_to_find)
-        
         mock_bitbucket_requests.assert_called_once_with('get', f"{client.base_api_url}/admin/users?filter={user_id_to_find}")
         self.assertEqual(actual_user_details, expected_user_details)
 
@@ -60,15 +55,12 @@ class TestBitbucketApi(unittest.TestCase):
         """Test get_user_details when user is not found."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         user_id_to_find = "unknownuser"
         mock_response_data = {"values": []} # Empty list
         mock_bitbucket_requests.return_value = (200, mock_response_data, None)
-        
         actual_user_details = client.get_user_details(user_id_to_find)
-        
         mock_bitbucket_requests.assert_called_once_with('get', f"{client.base_api_url}/admin/users?filter={user_id_to_find}")
         self.assertIsNone(actual_user_details)
 
@@ -77,9 +69,8 @@ class TestBitbucketApi(unittest.TestCase):
         """Test get_user_details when user is not in the returned list."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         user_id_to_find = "unknownuser"
         mock_response_data = {
             "values": [
@@ -98,15 +89,12 @@ class TestBitbucketApi(unittest.TestCase):
         """Test get_user_details when API returns an error."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         user_id_to_find = "jdoe"
         # Simulate an API error (e.g., bitbucket_requests returns an error)
         mock_bitbucket_requests.return_value = (500, "Internal Server Error", "Some error object or message")
-        
         actual_user_details = client.get_user_details(user_id_to_find)
-        
         mock_bitbucket_requests.assert_called_once_with('get', f"{client.base_api_url}/admin/users?filter={user_id_to_find}")
         self.assertIsNone(actual_user_details)
 
@@ -115,15 +103,12 @@ class TestBitbucketApi(unittest.TestCase):
         """Test get_user_details when 'values' key is missing in response."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
-        
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
         user_id_to_find = "jdoe"
         mock_response_data = {} # Missing 'values' key
         mock_bitbucket_requests.return_value = (200, mock_response_data, None)
-        
         actual_user_details = client.get_user_details(user_id_to_find)
-        
         mock_bitbucket_requests.assert_called_once_with('get', f"{client.base_api_url}/admin/users?filter={user_id_to_find}")
         self.assertIsNone(actual_user_details)
 
@@ -132,8 +117,8 @@ class TestBitbucketApi(unittest.TestCase):
         """Test generic_add_default_reviewers_condition for project-level success."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         project_key = "TESTPROJ"
         users_details_list = [{"name": "jdoe", "id": 101}]
@@ -165,8 +150,8 @@ class TestBitbucketApi(unittest.TestCase):
         """Test generic_add_default_reviewers_condition for repository-level success."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         project_key = "TESTPROJ"
         repo_name = "test-repo"
@@ -199,19 +184,17 @@ class TestBitbucketApi(unittest.TestCase):
         """Test generic_add_default_reviewers_condition when API returns an error."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         project_key = "TESTPROJ"
         users_details_list = [{"name": "jdoe", "id": 101}]
         reviewers_payload_config = {"sourceMatcher": {}, "targetMatcher": {}, "requiredApprovals": 1}
-        
         mock_bitbucket_requests.return_value = (400, {"error": "Bad Request"}, "API Error")
 
         status, response, error = client.generic_add_default_reviewers_condition(
             project_key, users_details_list, reviewers_payload_config
         )
-        
         self.assertEqual(status, 400)
         self.assertEqual(response, {"error": "Bad Request"})
         self.assertEqual(error, "API Error")
@@ -221,14 +204,13 @@ class TestBitbucketApi(unittest.TestCase):
         """Test bitbucket_requests for a successful GET request with JSON response."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         mock_http_response = MagicMock()
         mock_http_response.status_code = 200
         mock_http_response.text = '{"key": "value"}'
         mock_http_response.json.return_value = {"key": "value"}
-        
         # Configure the HttpRequests instance returned by the constructor
         mock_http_instance = MockHttpRequests.return_value
         mock_http_instance.http_requests.return_value = mock_http_response
@@ -246,19 +228,17 @@ class TestBitbucketApi(unittest.TestCase):
         """Test bitbucket_requests for a successful POST with no response text."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         mock_http_response = MagicMock()
         mock_http_response.status_code = 204
         mock_http_response.text = "" # No text
-        
         mock_http_instance = MockHttpRequests.return_value
         mock_http_instance.http_requests.return_value = mock_http_response
 
         request_body = {"some": "data"}
         status, data, error = client.bitbucket_requests('post', f"{client.base_api_url}/other/endpoint", data=request_body)
-        
         import json # Ensure json is imported for dumps
         MockHttpRequests.assert_called_once_with('post', f"{client.base_api_url}/other/endpoint", client.user, client.password, data=json.dumps(request_body), params=None)
         mock_http_instance.http_requests.assert_called_once()
@@ -271,14 +251,13 @@ class TestBitbucketApi(unittest.TestCase):
         """Test bitbucket_requests when response is not valid JSON."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         mock_http_response = MagicMock()
         mock_http_response.status_code = 200
         mock_http_response.text = "Not a valid JSON"
         mock_http_response.json.side_effect = ValueError("Simulated JSONDecodeError") # Or json.JSONDecodeError
-        
         mock_http_instance = MockHttpRequests.return_value
         mock_http_instance.http_requests.return_value = mock_http_response
 
@@ -294,8 +273,8 @@ class TestBitbucketApi(unittest.TestCase):
         """Test bitbucket_requests when HttpRequests raises a RequestException."""
         host = "http://localhost:7990"
         user = "testuser"
-        password = "testpassword"
-        client = BitbucketApi(host, user, password)
+        # Use the class constant
+        client = BitbucketApi(host, user, self.TEST_USER_PASSWORD)
 
         # Configure the HttpRequests instance to raise an exception
         mock_http_instance = MockHttpRequests.return_value
