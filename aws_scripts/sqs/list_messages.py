@@ -1,4 +1,4 @@
-from aws_conn import AWS
+from aws_scripts.common_aws_client import AWS
 
 
 def list_sqs_messages(queue_url,
