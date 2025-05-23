@@ -1,73 +1,70 @@
+import os # Import os module
 from bitbucket_client import BitbucketApi
 from getpass import getpass
 
 # The demostration shows add default reviewers into a project.
 
+def main():
+    # Read host from environment variable or prompt
+    host = os.environ.get('BITBUCKET_HOST')
+    if not host:
+        host = input('Enter host address : [e.g. http://localhost:7990] ') or 'http://localhost:7990'
 
-def get_user_details(bb_client, user_id):
-    url = f"{bb_client.host}/admin/users?filter={user_id}"
-    status, response = bb_client.bitbucket_requests('get', url)
-    print(status)
-    for user in response['values']:
-        if user['name'] == user_id:
-            return user
+    # Read user from environment variable or prompt
+    user = os.environ.get('BITBUCKET_USER')
+    if not user:
+        user = input('Enter userid (*required):')
+
+    # Read password from environment variable or prompt
+    password = os.environ.get('BITBUCKET_PASSWORD')
+    if not password:
+        password = getpass(prompt='Enter password (*required): ')
+
+    project_key = input('Enter project key (*required):')
+
+    # Standardize user_list handling
+    user_input_str = input('Enter space-separated user list (e.g., userA userB userC) (*required): ')
+    if not user_input_str:
+        user_list = ['10001', '10002', '10003'] # Default if empty input
+    else:
+        user_list = user_input_str.split()
 
 
-def add_default_reviewers(bb_client, project_key, users):
-    data = {
-        "reviewers": [
-            {
-                "name": "test-1",
-                "emailAddress": "jane@example.com",
-                "id": 101,
-                "displayName": "Jane Citizen",
-                "active": True,
-                "slug": "jcitizen",
-                "type": "NORMAL"
-            }
-        ],
-        "sourceMatcher": {
-            "active": True,
-            "id": "refs/heads/**",
-            "displayId": "refs/heads/**",
-            "type": {
-                "id": "PATTERN",
-                "name": "Pattern"
-            }
-        },
-        "targetMatcher": {
-            "active": True,
-            "id": "refs/heads/develop",
-            "displayId": "develop",
-            "type": {
-                "id": "BRANCH",
-                "name": "Branch"
-            }
-        },
-        "requiredApprovals": 1
-    }
+    bb_client = BitbucketApi(host, user, password)
 
     user_data = []
-    for user in users:
-        user_details = get_user_details(bb_client, user)
-        user_data.append(user_details)
+    for user_id_from_list in user_list:
+        user_details = bb_client.get_user_details(user_id_from_list)
+        if user_details:
+            user_data.append(user_details)
+        else:
+            print(f"Warning: Could not retrieve details for user {user_id_from_list}")
 
-    data['reviewers'] = user_data
-    url = f"{bb_client.host.replace('api','default-reviewers')}/projects/{project_key}/condition"
-    status, response = bb_client.bitbucket_requests('post', url, data=data)
-    return status, response
+    if not user_data:
+        print("No valid user details found. Aborting.")
+    else:
+        payload_config = {
+            "sourceMatcher": {
+                "active": True,
+                "id": "refs/heads/**",
+                "displayId": "refs/heads/**",
+                "type": {"id": "PATTERN", "name": "Pattern"}
+            },
+            "targetMatcher": {
+                "active": True,
+                "id": "refs/heads/develop",
+                "displayId": "develop",
+                "type": {"id": "BRANCH", "name": "Branch"}
+            },
+            "requiredApprovals": 1
+        }
 
+        status, response, error = bb_client.generic_add_default_reviewers_condition(project_key, user_data, payload_config)
+        if error:
+            print(f"Error adding default reviewers: {error}")
+            print(status, response)
+        else:
+            print(status, response)
 
-host = input(
-    'Enter host address : [e.g. http://localhost:7990] ') or 'http://localhost:7990'
-user = input('Enter userid (*required):')
-password = getpass(prompt='Enter password (*required): ')
-project_key = input('Enter project key (*required):')
-user_list = input(
-    'Enter user list (*required):') or ['10001', '10002', '10003']
-
-
-bb_clinet = BitbucketApi(host, user, password)
-
-status, response = add_default_reviewers(bb_clinet, project_key, user_list)
-print(status, response)
+if __name__ == '__main__':
+    main()

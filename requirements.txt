@@ -1,3 +1,5 @@
+boto3
+python-dateutil
 ldap3
 requests
 flake8
